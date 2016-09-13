@@ -1,0 +1,44 @@
+	public battles() {
+		JFrame gameFrame = new JFrame("Battles v1.0.1 of 9/7/2016");
+		gameFrame.setLayout(null);
+		//canvas.setSize(647, 521);
+		//canvas.setLocation(0, 0);
+		//canvas.setLayout(new FlowLayout());
+		//gameFrame.getContentPane().add(canvas);
+		upgrade.setLocation(0, 570);
+		//upgrade.setSize(upgrade.getPreferredSize());
+		upgrade.setSize(upgrade.getPreferredSize());
+		//upgrade.setVisible(false);
+		gameFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		gameFrame.setSize(647, 560);
+		gameFrame.setResizable(false);
+		gameFrame.add(upgrade);
+		gameFrame.setVisible(true);
+	}
+JFrame startUpFrame = new JFrame("Battles v1.5.2 of 9/8/2016");
+		startUpFrame.setLayout(null);
+		startUpFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		playButton = new JButton("Play Game");
+		playButton.addActionListener(new ActionListener() { 
+			  public void actionPerformed(ActionEvent e) {
+				  try {
+					startUpFrame.dispose();
+					setUpFrame();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			  } 
+		});
+		playButton.setSize(playButton.getPreferredSize());
+		playButton.setLocation(0, 0);
+		startUpFrame.add(playButton);
+		startUpFrame.setSize(500, 500);
+		startUpFrame.setResizable(false);
+		startUpFrame.setVisible(true);
+URL myURL = getClass().getProtectionDomain().getCodeSource().getLocation();
+		java.net.URI myURI = null;
+		try {
+		    myURI = myURL.toURI();
+		} catch (URISyntaxException e1) 
+		{}
+		return java.nio.file.Paths.get(myURI).toFile().toString();
