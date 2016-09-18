@@ -1,3 +1,4 @@
+package battles;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -30,7 +31,7 @@ class GameCanvas extends JComponent {
 	public int firepressed = 0;
 	public int bullet_speed = 6;
 	public int regenerativePower = 0;
-	public static int soldiersKilled = 0;
+	public int soldiersKilled = 0;
 	public int levelUpEligible = 0;
 	public int isLoseMessageDisplayed = 1;
 	public int currentLevel = 1;
@@ -159,6 +160,7 @@ class GameCanvas extends JComponent {
 	public void setLevelCost() {
 		if(currentLevel == 1) upgradeCost = 5;
 		if(currentLevel == 2) upgradeCost = 6;
+		if(currentLevel == 3) upgradeCost = 7;
 	}
 	public void soldier_move() {
 		for(double i = 0; i < soldier_speed; i++) {
@@ -342,7 +344,12 @@ class GameCanvas extends JComponent {
 				turnOffGame();
 			}
 		} else if(currentLevel == 3) {
-			
+			if(upgradeCost == 7) {
+				cannon_health = 6;
+				JOptionPane.showMessageDialog(this, "Cannon health is now 6.");
+				upgradeCost = 10;
+				upgraded = 1;
+			}
 		}
 		}
 	}
@@ -366,9 +373,6 @@ class GameCanvas extends JComponent {
 	    Clip clip = AudioSystem.getClip();
 	    clip.open(audioIn);
 	    clip.start();
-	}
-	public static int returnSoldiersKilled() {
-		return soldiersKilled;
 	}
 }
 
@@ -616,7 +620,7 @@ public class Battles extends JFrame {
 		return currentLevel;
 	}
 	public static void updateSoldiersKilledFile() throws Exception {
-		writeToFile(Integer.toString(add(Integer.parseInt(soldiersKilled()), GameCanvas.returnSoldiersKilled())), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
+		writeToFile(Integer.toString(add(Integer.parseInt(soldiersKilled()), canvas.soldiersKilled)), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
 	}
 	public static void updateGamesPlayedFile() throws Exception {
 		writeToFile(Integer.toString(add(Integer.parseInt(gamesPlayed()), gamesPlayed)), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\gamesPlayed.txt");
@@ -625,8 +629,8 @@ public class Battles extends JFrame {
 		writeToFile(Integer.toString(canvas.currentLevel), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\currentLevel.txt");
 	}
 	public static void clearFiles() throws Exception {
-		writeToFile(Integer.toString(add(0, GameCanvas.returnSoldiersKilled())), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
-		writeToFile(Integer.toString(add(0, GameCanvas.returnSoldiersKilled())), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\gamesPlayed.txt");
+		writeToFile("0", GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
+		writeToFile("0", GameCanvas.getCurrentWorkingDir() + "\\saved_info\\gamesPlayed.txt");
 	}
 	public static void writeToFile(String toWrite, String filePath) {
 			File fout = new File(filePath);
