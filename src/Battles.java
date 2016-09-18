@@ -324,13 +324,13 @@ class GameCanvas extends JComponent {
 				cannon_health = 10;
 				regenerativePower = 4;
 				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 10. Regeneration = 4 health/soldier killed.");
-				upgradeCost = 13;
+				upgradeCost = 11;
 				upgraded = 1;
 			}
-			if(upgradeCost == 13 && upgraded == 0) {
-				cannon_health = 15;
+			if(upgradeCost == 11 && upgraded == 0) {
+				cannon_health = 25;
 				regenerativePower = 5;
-				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 15. Regeneration = 5 health/soldier killed.");
+				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 25. Regeneration = 5 health/soldier killed.");
 				upgradeCost = 13;
 				upgraded = 1;
 			}
