@@ -364,7 +364,7 @@ class GameCanvas extends JComponent {
 				upgradeCost = 12;
 				upgraded = 1;
 			}
-			if(upgradeCost == 12 && upgraded == 0) {
+			if(upgradeCost == 11 && upgraded == 0) {
 				cannon_health = 15;
 				regenerativePower = 2;
 				JOptionPane.showMessageDialog(this, "UPGRADE DETAILS: Cannon health: 15. Regeneration: 2/soldier killed.");
@@ -525,6 +525,7 @@ public class Battles extends JFrame {
 						gamesPlayed++;
 					}
 					update();
+					canvas.soldiersKilled = 0;
 			    	System.exit(0);
 			  } 
 		});
@@ -538,6 +539,7 @@ public class Battles extends JFrame {
 					updateSoldiersKilledFile();
 					updateGamesPlayedFile();
 					canvas.turnOffGame();
+					canvas.soldiersKilled = 0;
 					canvas.gameGoing = 0;
 					copyrightLabel.setVisible(true);
 					exitButton.setVisible(true);
