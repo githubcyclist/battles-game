@@ -230,6 +230,7 @@ class GameCanvas extends JComponent {
 		Battles.clip.stop();
 		Battles.playButton.setVisible(true);
 		Battles.statsButton.setVisible(true);
+		Battles.resetStatsButton.setVisible(true);
 		Battles.exitButton.setVisible(true);
 		Battles.playLabel.setVisible(true);
 		Battles.copyrightLabel.setVisible(true);
@@ -325,15 +326,23 @@ class GameCanvas extends JComponent {
 				regenerativePower = 4;
 				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 10. Regeneration = 4 health/soldier killed.");
 				upgradeCost = 11;
+				levelUpEligible = 1;
 				upgraded = 1;
 			}
 			if(upgradeCost == 11 && upgraded == 0) {
-				cannon_health = 25;
-				regenerativePower = 5;
-				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 25. Regeneration = 5 health/soldier killed.");
-				upgradeCost = 13;
-				upgraded = 1;
+				isLoseMessageDisplayed = 0;
+				JOptionPane.showMessageDialog(this, "Level up!");
+				gameGoing = 0;
+				currentLevel = 3;
+				try {
+					Battles.updateCurrentLevelFile();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				turnOffGame();
 			}
+		} else if(currentLevel == 3) {
+			
 		}
 		}
 	}
