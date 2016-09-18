@@ -514,7 +514,7 @@ public class Battles extends JFrame {
 			}
 		});
 		backButton.setVisible(false);
-		playLabel = new JLabel("Battles v1.8.6b");
+		playLabel = new JLabel("Battles v1.8.8");
 		playLabel.setFont(segoe_def);
 		playLabel.setSize(playLabel.getPreferredSize());
 		playLabel.setLocation(230, 0);
