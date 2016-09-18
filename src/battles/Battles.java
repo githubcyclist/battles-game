@@ -111,6 +111,7 @@ class GameCanvas extends JComponent {
 				if(isLoseMessageDisplayed == 1) {
 					JOptionPane.showMessageDialog(this, "YOU LOSE!!!");
 				}
+				Battles.gamesPlayed++;
 				gameLost = 1;
 			}
 		}
@@ -345,9 +346,29 @@ class GameCanvas extends JComponent {
 			}
 		} else if(currentLevel == 3) {
 			if(upgradeCost == 7) {
-				cannon_health = 6;
+				cannon_health = 3;
 				JOptionPane.showMessageDialog(this, "Cannon health is now 6.");
-				upgradeCost = 10;
+				upgradeCost = 3;
+				upgraded = 1;
+			}
+			if(upgradeCost == 3 && upgraded == 0) {
+				cannon_health = 8;
+				JOptionPane.showMessageDialog(this, "Cannon health is now 8.");
+				upgradeCost = 5;
+				upgraded = 1;
+			}
+			if(upgradeCost == 5 && upgraded == 0) {
+				cannon_health = 10;
+				regenerativePower = 1;
+				JOptionPane.showMessageDialog(this, "UPGRADE DETAILS: Cannon health: 10. Regeneration: 1/soldier killed.");
+				upgradeCost = 12;
+				upgraded = 1;
+			}
+			if(upgradeCost == 12 && upgraded == 0) {
+				cannon_health = 15;
+				regenerativePower = 2;
+				JOptionPane.showMessageDialog(this, "UPGRADE DETAILS: Cannon health: 15. Regeneration: 2/soldier killed.");
+				upgradeCost = 12;
 				upgraded = 1;
 			}
 		}
@@ -394,7 +415,7 @@ public class Battles extends JFrame {
 	public static JButton resetStatsButton;
 	public static void main(String[] args) throws Exception {
 		segoe_def = new Font("Segoe UI", Font.PLAIN, 26);
-		gameFrame = new JFrame("Battles v1.8.8");
+		gameFrame = new JFrame("Battles v1.8.8b");
 		gameFrame.setLayout(null);
 		gameFrame.getContentPane().setBackground(Color.WHITE);
 		gameFrame.addWindowListener(new WindowAdapter()
@@ -454,6 +475,7 @@ public class Battles extends JFrame {
 				  backButton.setVisible(true);
 				  playButton.setVisible(false);
 				  statsButton.setVisible(false);
+				  statsButton.setSelected(false);
 				  resetStatsButton.setVisible(false);
 				  exitButton.setVisible(false);
 				  statsLabel.setVisible(false);
@@ -487,7 +509,7 @@ public class Battles extends JFrame {
 		resetStatsButton = new JButton("Reset Stats");
 		resetStatsButton.setFont(segoe_def);
 		resetStatsButton.setSize(upgrade.getPreferredSize());
-		resetStatsButton.setLocation(200, 160);
+		resetStatsButton.setLocation(200, 120);
 		resetStatsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try{clearFiles();}catch(Exception e){e.printStackTrace();}
@@ -496,7 +518,7 @@ public class Battles extends JFrame {
 		exitButton = new JButton("Exit Game");
 		exitButton.setFont(segoe_def);
 		exitButton.setSize(upgrade.getPreferredSize());
-		exitButton.setLocation(200, 120);
+		exitButton.setLocation(200, 160);
 		exitButton.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) {
 					if(canvas.gameGoing == 1) {
@@ -514,8 +536,8 @@ public class Battles extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					updateSoldiersKilledFile();
-					canvas.turnOffGame();
 					updateGamesPlayedFile();
+					canvas.turnOffGame();
 					canvas.gameGoing = 0;
 					copyrightLabel.setVisible(true);
 					exitButton.setVisible(true);
@@ -527,7 +549,7 @@ public class Battles extends JFrame {
 			}
 		});
 		backButton.setVisible(false);
-		playLabel = new JLabel("Battles v1.8.8");
+		playLabel = new JLabel("Battles v1.8.8b");
 		playLabel.setFont(segoe_def);
 		playLabel.setSize(playLabel.getPreferredSize());
 		playLabel.setLocation(230, 0);
