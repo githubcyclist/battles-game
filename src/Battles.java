@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
@@ -29,12 +30,13 @@ class GameCanvas extends JComponent {
 	public int firepressed = 0;
 	public int bullet_speed = 6;
 	public int regenerativePower = 0;
-	public int soldiersKilled = 0;
+	public static int soldiersKilled = 0;
 	public int levelUpEligible = 0;
 	public int isLoseMessageDisplayed = 1;
 	public int currentLevel = 1;
 	public int updatedUpgradeCost = 0;
 	public int level6Used = 0;
+	public int gameLost = 0;
 	protected void paintComponent(Graphics g) {
 		if(gameGoing == 1) {
 		if(updatedUpgradeCost == 0) {
@@ -99,12 +101,16 @@ class GameCanvas extends JComponent {
 		if(soldier_y <= 60) {
 			cannon_health--;
 			if(cannon_health == 0) {
-				turnOffGame();
+				try {
+					turnOffGame();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				Battles.clip.stop();
-				Battles.gamesPlayed++;
 				if(isLoseMessageDisplayed == 1) {
 					JOptionPane.showMessageDialog(this, "YOU LOSE!!!");
 				}
+				gameLost = 1;
 			}
 		}
 		if(moneh >= upgradeCost) {
@@ -197,8 +203,9 @@ class GameCanvas extends JComponent {
 				cannon_health++;
 			}
 		}
+		System.out.println("Soldiers killed: " + soldiersKilled);
 	}
-	public void turnOffGame() {
+	public void turnOffGame() throws Exception {
 		Graphics g = Battles.canvas.getGraphics();
 		clearCanvas(g);
 		gameGoing = 0;
@@ -217,9 +224,9 @@ class GameCanvas extends JComponent {
 		firepressed = 0;
 		bullet_speed = 6;
 		regenerativePower = 0;
-		soldiersKilled = 0;
 		levelUpEligible = 0;
 		updatedUpgradeCost = 0;
+		gameLost = 0;
 		Battles.clip.stop();
 		Battles.playButton.setVisible(true);
 		Battles.statsButton.setVisible(true);
@@ -234,7 +241,7 @@ class GameCanvas extends JComponent {
 		g.setColor(Color.white);
 		g.drawRect(0, 0, 647, 534);
 	}
-	public void nextUpgrade() {
+	public void nextUpgrade() throws Exception {
 		if(upgradeable == 1) {
 		moneh -= upgradeCost;
 		int upgraded = 0;
@@ -321,9 +328,9 @@ class GameCanvas extends JComponent {
 				upgraded = 1;
 			}
 			if(upgradeCost == 13 && upgraded == 0) {
-				cannon_health = 10;
-				regenerativePower = 4;
-				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 5. Regeneration = 4 health/soldier killed.");
+				cannon_health = 15;
+				regenerativePower = 5;
+				JOptionPane.showMessageDialog(this, "Cannon health regenerated to 15. Regeneration = 5 health/soldier killed.");
 				upgradeCost = 13;
 				upgraded = 1;
 			}
@@ -351,6 +358,9 @@ class GameCanvas extends JComponent {
 	    clip.open(audioIn);
 	    clip.start();
 	}
+	public static int returnSoldiersKilled() {
+		return soldiersKilled;
+	}
 }
 
 public class Battles extends JFrame {
@@ -368,9 +378,10 @@ public class Battles extends JFrame {
 	public static int gamesPlayed = 0;
 	public static JLabel copyrightLabel;
 	public static JButton exitButton;
+	public static JButton resetStatsButton;
 	public static void main(String[] args) throws Exception {
 		segoe_def = new Font("Segoe UI", Font.PLAIN, 26);
-		gameFrame = new JFrame("Battles v1.8.5");
+		gameFrame = new JFrame("Battles v1.8.8");
 		gameFrame.setLayout(null);
 		gameFrame.getContentPane().setBackground(Color.WHITE);
 		gameFrame.addWindowListener(new WindowAdapter()
@@ -404,7 +415,7 @@ public class Battles extends JFrame {
 		upgrade.setLocation(400, 0);
 		upgrade.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) {
-				  canvas.nextUpgrade();
+				  try{canvas.nextUpgrade();}catch(Exception e1){e1.printStackTrace();}
 				  if(canvas.levelUpEligible == 1) {
 					  canvas.isLoseMessageDisplayed = 1;
 				  }
@@ -430,6 +441,7 @@ public class Battles extends JFrame {
 				  backButton.setVisible(true);
 				  playButton.setVisible(false);
 				  statsButton.setVisible(false);
+				  resetStatsButton.setVisible(false);
 				  exitButton.setVisible(false);
 				  statsLabel.setVisible(false);
 				  statsLabel2.setVisible(false);
@@ -459,21 +471,25 @@ public class Battles extends JFrame {
 			   }
 			}
 		});
+		resetStatsButton = new JButton("Reset Stats");
+		resetStatsButton.setFont(segoe_def);
+		resetStatsButton.setSize(upgrade.getPreferredSize());
+		resetStatsButton.setLocation(200, 160);
+		resetStatsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try{clearFiles();}catch(Exception e){e.printStackTrace();}
+			}
+		});
 		exitButton = new JButton("Exit Game");
 		exitButton.setFont(segoe_def);
 		exitButton.setSize(upgrade.getPreferredSize());
 		exitButton.setLocation(200, 120);
 		exitButton.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) {
-				  try {
-						updateSoldiersKilledFile();
-						if(canvas.gameGoing == 1) {
-							gamesPlayed++;
-						}
-						updateGamesPlayedFile();
-					} catch (Exception e1) {
-			            System.err.println("There was a problem: " + e1);
-			        }
+					if(canvas.gameGoing == 1) {
+						gamesPlayed++;
+					}
+					update();
 			    	System.exit(0);
 			  } 
 		});
@@ -490,6 +506,7 @@ public class Battles extends JFrame {
 					canvas.gameGoing = 0;
 					copyrightLabel.setVisible(true);
 					exitButton.setVisible(true);
+					resetStatsButton.setVisible(true);
 					gamesPlayed++;
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -497,19 +514,19 @@ public class Battles extends JFrame {
 			}
 		});
 		backButton.setVisible(false);
-		playLabel = new JLabel("Battles v1.8.5");
+		playLabel = new JLabel("Battles v1.8.6b");
 		playLabel.setFont(segoe_def);
 		playLabel.setSize(playLabel.getPreferredSize());
 		playLabel.setLocation(230, 0);
 		statsLabel = new JLabel("Soldiers killed: " + soldiersKilled());
 		statsLabel.setFont(segoe_def);
 		statsLabel.setSize(statsLabel.getPreferredSize());
-		statsLabel.setLocation(210, 160);
+		statsLabel.setLocation(210, 210);
 		statsLabel.setVisible(false);
 		statsLabel2 = new JLabel("Games played: " + gamesPlayed());
 		statsLabel2.setFont(segoe_def);
 		statsLabel2.setSize(statsLabel2.getPreferredSize());
-		statsLabel2.setLocation(210, 200);
+		statsLabel2.setLocation(210, 250);
 		statsLabel2.setVisible(false);
 		copyrightLabel = new JLabel("Copyright (c) 2016 H.");
 		copyrightLabel.setFont(segoe_def);
@@ -519,13 +536,16 @@ public class Battles extends JFrame {
 		Icon statsIcon = new ImageIcon(GameCanvas.getCurrentWorkingDir() + "\\images\\stats.gif");
 		Icon backIcon = new ImageIcon(GameCanvas.getCurrentWorkingDir() + "\\images\\back.gif");
 		Icon exitIcon = new ImageIcon(GameCanvas.getCurrentWorkingDir() + "\\images\\exit.gif");
+		Icon resetStatsIcon = new ImageIcon(GameCanvas.getCurrentWorkingDir() + "\\images\\reset_stats.gif");
 		playButton.setIcon(playIcon);
 		statsButton.setIcon(statsIcon);
+		resetStatsButton.setIcon(resetStatsIcon);
 		exitButton.setIcon(exitIcon);
 		backButton.setIcon(backIcon);
 		backButton.setSize(backButton.getPreferredSize());
 		gameFrame.add(playButton);
 		gameFrame.add(statsButton);
+		gameFrame.add(resetStatsButton);
 		gameFrame.add(exitButton);
 		gameFrame.add(backButton);
 		gameFrame.add(playLabel);
@@ -556,7 +576,7 @@ public class Battles extends JFrame {
 		} else {
 			upgrade.setEnabled(false);
 		}
-		Thread.sleep(100);
+		Thread.sleep(200);
 		recursive_call();
 	}
 	public static String soldiersKilled() throws Exception {
@@ -587,13 +607,17 @@ public class Battles extends JFrame {
 		return currentLevel;
 	}
 	public static void updateSoldiersKilledFile() throws Exception {
-		writeToFile(Integer.toString(add(Integer.parseInt(soldiersKilled()), canvas.soldiersKilled)), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
+		writeToFile(Integer.toString(add(Integer.parseInt(soldiersKilled()), GameCanvas.returnSoldiersKilled())), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
 	}
 	public static void updateGamesPlayedFile() throws Exception {
 		writeToFile(Integer.toString(add(Integer.parseInt(gamesPlayed()), gamesPlayed)), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\gamesPlayed.txt");
 	}
 	public static void updateCurrentLevelFile() throws Exception {
 		writeToFile(Integer.toString(canvas.currentLevel), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\currentLevel.txt");
+	}
+	public static void clearFiles() throws Exception {
+		writeToFile(Integer.toString(add(0, GameCanvas.returnSoldiersKilled())), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\soldiersKilled.txt");
+		writeToFile(Integer.toString(add(0, GameCanvas.returnSoldiersKilled())), GameCanvas.getCurrentWorkingDir() + "\\saved_info\\gamesPlayed.txt");
 	}
 	public static void writeToFile(String toWrite, String filePath) {
 			File fout = new File(filePath);
@@ -614,6 +638,14 @@ public class Battles extends JFrame {
 		Battles.playLabel.setVisible(true);
 		Battles.upgrade.setVisible(false);
 		Battles.backButton.setVisible(false);
+	}
+	public static void update() {
+		try {
+			updateSoldiersKilledFile();
+			updateGamesPlayedFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	public static int add(int num1, int num2) {return num1 + num2;}
 }
